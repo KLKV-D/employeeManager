@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
+      xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <title>User profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <a class="navbar-brand fs-3" th:href="@{/api/home}">Employee Manager</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler"
+                aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarToggler">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')" class="nav-item">
+                    <a class="nav-link fs-4" th:href="@{/api/users/page/1?sortField=id&sortDirection=asc}">users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-4" th:href="@{/api/employees/page/1?sortField=id&sortDirection=asc}">employees</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-4" th:href="@{/api/positions/page/1?sortField=id&sortDirection=asc}">positions</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fs-4" th:href="@{/api/departments/page/1?sortField=id&sortDirection=asc}">departments</a>
+                </li>
+            </ul>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-item nav-link fs-4" th:href="@{/api/users/{id}(id=${authenticatedUser.id})}"><span sec:authentication="name" /></a>
+                <a class="nav-item nav-link fs-4" th:href="@{/logout}">Logout</a>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="container w-50 p-3 mt-3 shadow rounded">
+    <div class="card">
+        <div class="card-header bg-primary text-white fs-3" th:text="${user.username + ' profile'}"></div>
+        <div class="card-body bg-light">
+            <h2 class="card-title" th:text="${user.username}"></h2>
+            <div class="row">
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-6"><h5 class="text-primary">Role</h5></div>
+                        <div class="col-6"><h5 th:text="${user.role.name}"></h5></div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-6"><h5 class="text-primary">Enabled</h5></div>
+                        <div class="col-6"><h5 th:text="${user.enabled}"></h5></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6"><h5 class="text-primary">Created Date</h5></div>
+                <div class="col-6"><h5 th:text="${#dates.format(user.createdDate, 'dd.MM.yyyy')}"></h5></div>
+            </div>
+            <div class="row">
+                <div class="col-6"><h5 class="text-primary">Created By</h5></div>
+                <div class="col-6"><h5 th:text="${user.createdBy}"></h5></div>
+            </div>
+            <div class="row">
+                <div class="col-6"><h5 class="text-primary">Last Modified Date</h5></div>
+                <div class="col-6"><h5 th:text="${#dates.format(user.lastModifiedDate, 'dd.MM.yyyy')}"></h5></div>
+            </div>
+            <div class="row">
+                <div class="col-6"><h5 class="text-primary">Last Modified By</h5></div>
+                <div class="col-6"><h5 th:text="${user.lastModifiedBy}"></h5></div>
+            </div>
+            <div sec:authorize="hasAuthority('ADMIN')">
+                <div class="d-grid gap1">
+                    <div class="d-flex mb-1">
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:href="@{/api/users/page/1?sortField=id&sortDirection=asc}">All</a>
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:href="@{/api/users/add}">Add</a>
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:href="@{/api/users/edit/profile/{id}(id=${user.id})}">Edit<br/>profile</a>
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:href="@{/api/users/edit/password/{id}(id=${user.id})}">Change<br/>password</a>
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:if="${user.role.name == 'MANAGER' or user.role.name == 'USER'}"
+                           th:href="@{/api/users/delete/{id}(id=${user.id})}">Delete</a>
+                    </div>
+                </div>
+            </div>
+            <div sec:authorize="hasAuthority('MANAGER')">
+                <div class="d-grid gap1">
+                    <div class="d-flex mb-1">
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:href="@{/api/users/page/1?sortField=id&sortDirection=asc}">All</a>
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:href="@{/api/users/add}">Add</a>
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:href="@{/api/users/edit/profile/{id}(id=${user.id})}">Edit<br/>profile</a>
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:href="@{/api/users/edit/password/{id}(id=${user.id})}">Change<br/>password</a>
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:if="${user.role.name == 'USER'}"
+                           th:href="@{/api/users/delete/{id}(id=${user.id})}">Delete</a>
+                    </div>
+                </div>
+            </div>
+            <div sec:authorize="hasAuthority('USER')">
+                <div class="d-grid gap1">
+                    <div class="d-flex mb-1">
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:href="@{/api/users/edit/profile/{id}(id=${user.id})}">Edit<br/>profile</a>
+                        <a class="btn btn-primary d-inline-flex align-items-center justify-content-center flex-fill me-1"
+                           th:href="@{/api/users/edit/password/{id}(id=${user.id})}">Change<br/>password</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

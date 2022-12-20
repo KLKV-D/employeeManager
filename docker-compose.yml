@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  app_backend:
+    image: 'employee_manager_image:latest'
+    build:
+      context: .
+    container_name: 'app_backend'
+    depends_on:
+      - postgres_db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres_db:5432/employeemanagerdb
+      - SPRING_DATASOURCE_USERNAME=biboran
+      - SPRING_DATASOURCE_PASSWORD=biboran
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate
+    ports:
+      - "8080:8080"
+
+  postgres_db:
+    image: 'postgres:15.1-alpine'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    container_name: 'postgres_db'
+    environment:
+      - POSTGRES_DB=employeemanagerdb
+      - POSTGRES_USER=biboran
+      - POSTGRES_PASSWORD=biboran
+
+volumes:
+  pgdata:
+
+
