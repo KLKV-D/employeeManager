@@ -6,6 +6,6 @@ COPY src src
 
 RUN ./mvnw package -DskipTests
 
-FROM openjdk:17-jre-alpine
+FROM openjdk:17-alpine
 COPY --from=build /target/employeeManager-0.0.1-SNAPSHOT.jar employee_manager_backend.jar
 ENTRYPOINT ["java", "-jar", "employee_manager_backend.jar"]
